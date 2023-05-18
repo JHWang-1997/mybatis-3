@@ -244,9 +244,11 @@ public class ResolverUtil<T> {
    * @return the resolver util
    */
   public ResolverUtil<T> find(Test test, String packageName) {
+    // 将包路径中所有的.替换为/
     String path = getPackagePath(packageName);
 
     try {
+      // 获取指定包下所有文件的文件名
       List<String> children = VFS.getInstance().list(path);
       for (String child : children) {
         if (child.endsWith(".class")) {
@@ -285,14 +287,16 @@ public class ResolverUtil<T> {
   @SuppressWarnings("unchecked")
   protected void addIfMatching(Test test, String fqn) {
     try {
+      // 将包名规范化
       String externalName = fqn.substring(0, fqn.indexOf('.')).replace('/', '.');
       ClassLoader loader = getClassLoader();
       if (log.isDebugEnabled()) {
         log.debug("Checking to see if class " + externalName + " matches criteria [" + test + "]");
       }
-
+      // 加载该类
       Class<?> type = loader.loadClass(externalName);
       if (test.matches(type)) {
+        // 搜集所有符合条件的类对象
         matches.add((Class<T>) type);
       }
     } catch (Throwable t) {

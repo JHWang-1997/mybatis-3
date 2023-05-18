@@ -135,11 +135,14 @@ public class TypeAliasRegistry {
 
   public void registerAliases(String packageName, Class<?> superType) {
     ResolverUtil<Class<?>> resolverUtil = new ResolverUtil<>();
+    // IsA 用与筛选出所有Object的子类
     resolverUtil.find(new ResolverUtil.IsA(superType), packageName);
+    // 此时已经将包下所有类的Class对象搜集完成
     Set<Class<? extends Class<?>>> typeSet = resolverUtil.getClasses();
     for (Class<?> type : typeSet) {
       // Ignore inner classes and interfaces (including package-info.java)
       // Skip also inner classes. See issue #6
+      // 排除匿名类，接口和内部类
       if (!type.isAnonymousClass() && !type.isInterface() && !type.isMemberClass()) {
         registerAlias(type);
       }
@@ -147,6 +150,7 @@ public class TypeAliasRegistry {
   }
 
   public void registerAlias(Class<?> type) {
+    // 截取包名后真实的类名作为别名
     String alias = type.getSimpleName();
     Alias aliasAnnotation = type.getAnnotation(Alias.class);
     if (aliasAnnotation != null) {
@@ -165,6 +169,7 @@ public class TypeAliasRegistry {
       throw new TypeException(
           "The alias '" + alias + "' is already mapped to the value '" + typeAliases.get(key).getName() + "'.");
     }
+    // 一个别名与Class对象的映射
     typeAliases.put(key, value);
   }
 

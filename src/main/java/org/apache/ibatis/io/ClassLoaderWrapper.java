@@ -228,6 +228,8 @@ public class ClassLoaderWrapper {
   }
 
   ClassLoader[] getClassLoaders(ClassLoader classLoader) {
+    // 按顺序分别是指定类加载器，默认类加载器，线程上下文加载器，当前类的类加载器和系统类加载器
+    // 取第一个不为空的类加载器进行加载
     return new ClassLoader[] { classLoader, defaultClassLoader, Thread.currentThread().getContextClassLoader(),
         getClass().getClassLoader(), systemClassLoader };
   }

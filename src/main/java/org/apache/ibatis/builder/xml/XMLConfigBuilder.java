@@ -106,6 +106,7 @@ public class XMLConfigBuilder extends BaseBuilder {
     if (parsed) {
       throw new BuilderException("Each XMLConfigBuilder can only be used once.");
     }
+    // 配置文件只允许解析一次，
     parsed = true;
     parseConfiguration(parser.evalNode("/configuration"));
     return configuration;
@@ -114,20 +115,26 @@ public class XMLConfigBuilder extends BaseBuilder {
   private void parseConfiguration(XNode root) {
     try {
       // issue #117 read properties first
+      // 解析<properties>标签下的配置
       propertiesElement(root.evalNode("properties"));
+      // 解析<settings>标签下的配置
       Properties settings = settingsAsProperties(root.evalNode("settings"));
       loadCustomVfs(settings);
       loadCustomLogImpl(settings);
+      // 解析<typeAliases>标签，解析别名标签
       typeAliasesElement(root.evalNode("typeAliases"));
+      // 解析自定义插件
       pluginElement(root.evalNode("plugins"));
       objectFactoryElement(root.evalNode("objectFactory"));
       objectWrapperFactoryElement(root.evalNode("objectWrapperFactory"));
       reflectorFactoryElement(root.evalNode("reflectorFactory"));
       settingsElement(settings);
       // read it after objectFactory and objectWrapperFactory issue #631
+      // 解析<environments>标签
       environmentsElement(root.evalNode("environments"));
       databaseIdProviderElement(root.evalNode("databaseIdProvider"));
       typeHandlerElement(root.evalNode("typeHandlers"));
+      // 解析<mappers>标签
       mapperElement(root.evalNode("mappers"));
     } catch (Exception e) {
       throw new BuilderException("Error parsing SQL Mapper Configuration. Cause: " + e, e);
@@ -140,6 +147,7 @@ public class XMLConfigBuilder extends BaseBuilder {
     }
     Properties props = context.getChildrenAsProperties();
     // Check that all settings are known to the configuration class
+    // 确保所有的setting参数都是configuration中的字段
     MetaClass metaConfig = MetaClass.forClass(Configuration.class, localReflectorFactory);
     for (Object key : props.keySet()) {
       if (!metaConfig.hasSetter(String.valueOf(key))) {
@@ -173,7 +181,9 @@ public class XMLConfigBuilder extends BaseBuilder {
     if (parent != null) {
       for (XNode child : parent.getChildren()) {
         if ("package".equals(child.getName())) {
+          // 解析指定包下的类的别名
           String typeAliasPackage = child.getStringAttribute("name");
+          // 为包下所有非接口非匿名类和非内部类生成别名和Class对象的映射
           configuration.getTypeAliasRegistry().registerAliases(typeAliasPackage);
         } else {
           String alias = child.getStringAttribute("alias");
@@ -181,6 +191,7 @@ public class XMLConfigBuilder extends BaseBuilder {
           try {
             Class<?> clazz = Resources.classForName(type);
             if (alias == null) {
+              // 别名缺省时，使用真实类目
               typeAliasRegistry.registerAlias(clazz);
             } else {
               typeAliasRegistry.registerAlias(alias, clazz);
@@ -234,6 +245,7 @@ public class XMLConfigBuilder extends BaseBuilder {
 
   private void propertiesElement(XNode context) throws Exception {
     if (context != null) {
+      // 解析<properties>标签下的子标签<property>
       Properties defaults = context.getChildrenAsProperties();
       String resource = context.getStringAttribute("resource");
       String url = context.getStringAttribute("url");
