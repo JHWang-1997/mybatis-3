@@ -288,6 +288,7 @@ public class DefaultSqlSession implements SqlSession {
 
   @Override
   public <T> T getMapper(Class<T> type) {
+    // 在解析mapper.xml文件时已经将接口对应的Class对象做缓存
     return configuration.getMapper(type, this);
   }
 

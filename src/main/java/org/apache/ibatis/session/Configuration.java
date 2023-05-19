@@ -713,6 +713,7 @@ public class Configuration {
       Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
     StatementHandler statementHandler = new RoutingStatementHandler(executor, mappedStatement, parameterObject,
         rowBounds, resultHandler, boundSql);
+    // StatementHandler对象也可以通过自定义拦截器进行增强
     return (StatementHandler) interceptorChain.pluginAll(statementHandler);
   }
 
@@ -731,8 +732,10 @@ public class Configuration {
       executor = new SimpleExecutor(this, transaction);
     }
     if (cacheEnabled) {
+      // 使用装饰器模式实现缓存执行器
       executor = new CachingExecutor(executor);
     }
+    // 可以自定义拦截器对执行器进行拦截
     return (Executor) interceptorChain.pluginAll(executor);
   }
 

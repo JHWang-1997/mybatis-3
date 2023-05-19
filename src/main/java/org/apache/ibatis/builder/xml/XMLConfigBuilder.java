@@ -125,6 +125,7 @@ public class XMLConfigBuilder extends BaseBuilder {
       typeAliasesElement(root.evalNode("typeAliases"));
       // 解析自定义插件
       pluginElement(root.evalNode("plugins"));
+      // 自定义对象工厂
       objectFactoryElement(root.evalNode("objectFactory"));
       objectWrapperFactoryElement(root.evalNode("objectWrapperFactory"));
       reflectorFactoryElement(root.evalNode("reflectorFactory"));
@@ -272,13 +273,18 @@ public class XMLConfigBuilder extends BaseBuilder {
         .setAutoMappingBehavior(AutoMappingBehavior.valueOf(props.getProperty("autoMappingBehavior", "PARTIAL")));
     configuration.setAutoMappingUnknownColumnBehavior(
         AutoMappingUnknownColumnBehavior.valueOf(props.getProperty("autoMappingUnknownColumnBehavior", "NONE")));
+    // 默认开启二级缓存
     configuration.setCacheEnabled(booleanValueOf(props.getProperty("cacheEnabled"), true));
+    // 指定延迟加载时使用的对象代理工厂，默认为Javassist
     configuration.setProxyFactory((ProxyFactory) createInstance(props.getProperty("proxyFactory")));
+    // 延迟加载的全局开关，默认关闭
     configuration.setLazyLoadingEnabled(booleanValueOf(props.getProperty("lazyLoadingEnabled"), false));
     configuration.setAggressiveLazyLoading(booleanValueOf(props.getProperty("aggressiveLazyLoading"), false));
     configuration.setMultipleResultSetsEnabled(booleanValueOf(props.getProperty("multipleResultSetsEnabled"), true));
     configuration.setUseColumnLabel(booleanValueOf(props.getProperty("useColumnLabel"), true));
+    // 允许JDBC自动生成主键
     configuration.setUseGeneratedKeys(booleanValueOf(props.getProperty("useGeneratedKeys"), false));
+    // 默认配置的执行器
     configuration.setDefaultExecutorType(ExecutorType.valueOf(props.getProperty("defaultExecutorType", "SIMPLE")));
     configuration.setDefaultStatementTimeout(integerValueOf(props.getProperty("defaultStatementTimeout"), null));
     configuration.setDefaultFetchSize(integerValueOf(props.getProperty("defaultFetchSize"), null));
@@ -287,6 +293,7 @@ public class XMLConfigBuilder extends BaseBuilder {
     configuration.setSafeRowBoundsEnabled(booleanValueOf(props.getProperty("safeRowBoundsEnabled"), false));
     configuration.setLocalCacheScope(LocalCacheScope.valueOf(props.getProperty("localCacheScope", "SESSION")));
     configuration.setJdbcTypeForNull(JdbcType.valueOf(props.getProperty("jdbcTypeForNull", "OTHER")));
+    // 指定对象的哪些方法触发一次延迟加载。
     configuration.setLazyLoadTriggerMethods(
         stringSetValueOf(props.getProperty("lazyLoadTriggerMethods"), "equals,clone,hashCode,toString"));
     configuration.setSafeResultHandlerEnabled(booleanValueOf(props.getProperty("safeResultHandlerEnabled"), true));
@@ -307,14 +314,17 @@ public class XMLConfigBuilder extends BaseBuilder {
   private void environmentsElement(XNode context) throws Exception {
     if (context != null) {
       if (environment == null) {
+        // 获取默认配置的environment Id
         environment = context.getStringAttribute("default");
       }
       for (XNode child : context.getChildren()) {
         String id = child.getStringAttribute("id");
         if (isSpecifiedEnvironment(id)) {
+          // 判断当前的environment是否为指定的默认environment
           TransactionFactory txFactory = transactionManagerElement(child.evalNode("transactionManager"));
           DataSourceFactory dsFactory = dataSourceElement(child.evalNode("dataSource"));
           DataSource dataSource = dsFactory.getDataSource();
+          // Environment对象也是使用构造者模式
           Environment.Builder environmentBuilder = new Environment.Builder(id).transactionFactory(txFactory)
               .dataSource(dataSource);
           configuration.setEnvironment(environmentBuilder.build());
@@ -403,13 +413,16 @@ public class XMLConfigBuilder extends BaseBuilder {
           String url = child.getStringAttribute("url");
           String mapperClass = child.getStringAttribute("class");
           if (resource != null && url == null && mapperClass == null) {
+            // 配置的是resource
             ErrorContext.instance().resource(resource);
             try (InputStream inputStream = Resources.getResourceAsStream(resource)) {
+              // 对mapper配置文件进行解析
               XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, resource,
                   configuration.getSqlFragments());
               mapperParser.parse();
             }
           } else if (resource == null && url != null && mapperClass == null) {
+            //配置的是url
             ErrorContext.instance().resource(url);
             try (InputStream inputStream = Resources.getUrlAsStream(url)) {
               XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, url,
@@ -417,6 +430,7 @@ public class XMLConfigBuilder extends BaseBuilder {
               mapperParser.parse();
             }
           } else if (resource == null && url == null && mapperClass != null) {
+            // 配置的是class
             Class<?> mapperInterface = Resources.classForName(mapperClass);
             configuration.addMapper(mapperInterface);
           } else {

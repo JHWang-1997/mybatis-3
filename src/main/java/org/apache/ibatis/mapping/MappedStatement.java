@@ -199,6 +199,7 @@ public final class MappedStatement {
     }
 
     public MappedStatement build() {
+      // 构造者模式不仅可以分步构造对象，也可以在最后统一对参数进行校验
       assert mappedStatement.configuration != null;
       assert mappedStatement.id != null;
       assert mappedStatement.sqlSource != null;
@@ -318,6 +319,7 @@ public final class MappedStatement {
 
   public BoundSql getBoundSql(Object parameterObject) {
     BoundSql boundSql = sqlSource.getBoundSql(parameterObject);
+    // 解析参数
     List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
     if (parameterMappings == null || parameterMappings.isEmpty()) {
       boundSql = new BoundSql(configuration, boundSql.getSql(), parameterMap.getParameterMappings(), parameterObject);

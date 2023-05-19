@@ -96,6 +96,7 @@ public class CacheBuilder {
     // issue #352, do not apply decorators to custom caches
     if (PerpetualCache.class.equals(cache.getClass())) {
       for (Class<? extends Cache> decorator : decorators) {
+        // 使用动态代理实现装饰器模式
         cache = newCacheDecoratorInstance(decorator, cache);
         setCacheProperties(cache);
       }

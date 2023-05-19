@@ -66,7 +66,9 @@ public class XMLStatementBuilder extends BaseBuilder {
     String nodeName = context.getNode().getNodeName();
     SqlCommandType sqlCommandType = SqlCommandType.valueOf(nodeName.toUpperCase(Locale.ENGLISH));
     boolean isSelect = sqlCommandType == SqlCommandType.SELECT;
+    // 对于非select的方法，选哟清除缓存
     boolean flushCache = context.getBooleanAttribute("flushCache", !isSelect);
+    // 对于select的方法，默认使用缓存
     boolean useCache = context.getBooleanAttribute("useCache", isSelect);
     boolean resultOrdered = context.getBooleanAttribute("resultOrdered", false);
 
@@ -98,6 +100,7 @@ public class XMLStatementBuilder extends BaseBuilder {
     SqlSource sqlSource = langDriver.createSqlSource(configuration, context, parameterTypeClass);
     StatementType statementType = StatementType
         .valueOf(context.getStringAttribute("statementType", StatementType.PREPARED.toString()));
+    // 是一个给驱动的建议值，尝试让驱动程序每次批量返回的结果行数等于这个设置值
     Integer fetchSize = context.getIntAttribute("fetchSize");
     Integer timeout = context.getIntAttribute("timeout");
     String parameterMap = context.getStringAttribute("parameterMap");
@@ -189,6 +192,7 @@ public class XMLStatementBuilder extends BaseBuilder {
     if (databaseId != null) {
       return false;
     }
+    // namespace.id
     id = builderAssistant.applyCurrentNamespace(id, false);
     if (!this.configuration.hasStatement(id, false)) {
       return true;

@@ -96,6 +96,7 @@ public class XMLMapperBuilder extends BaseBuilder {
   }
 
   public void parse() {
+    // 判断是否解析过此文件
     if (!configuration.isResourceLoaded(resource)) {
       configurationElement(parser.evalNode("/mapper"));
       configuration.addLoadedResource(resource);
@@ -118,6 +119,7 @@ public class XMLMapperBuilder extends BaseBuilder {
         throw new BuilderException("Mapper's namespace cannot be empty");
       }
       builderAssistant.setCurrentNamespace(namespace);
+      // cache-ref 引用其它命名空间的缓存配置
       cacheRefElement(context.evalNode("cache-ref"));
       cacheElement(context.evalNode("cache"));
       parameterMapElement(context.evalNodes("/mapper/parameterMap"));
@@ -138,6 +140,7 @@ public class XMLMapperBuilder extends BaseBuilder {
 
   private void buildStatementFromContext(List<XNode> list, String requiredDatabaseId) {
     for (XNode context : list) {
+      // statement也是使用构造者模式
       final XMLStatementBuilder statementParser = new XMLStatementBuilder(configuration, builderAssistant, context,
           requiredDatabaseId);
       try {
@@ -208,9 +211,13 @@ public class XMLMapperBuilder extends BaseBuilder {
 
   private void cacheElement(XNode context) {
     if (context != null) {
+      // 缓存的默认实现
       String type = context.getStringAttribute("type", "PERPETUAL");
+      // PerpetualCache的别名就是PERPETUAL，找到其真实类
       Class<? extends Cache> typeClass = typeAliasRegistry.resolveAlias(type);
+      // 淘汰策略使用LRU算法
       String eviction = context.getStringAttribute("eviction", "LRU");
+      // LRU是LruCache的别名
       Class<? extends Cache> evictionClass = typeAliasRegistry.resolveAlias(eviction);
       Long flushInterval = context.getLongAttribute("flushInterval");
       Integer size = context.getIntAttribute("size");
@@ -433,6 +440,7 @@ public class XMLMapperBuilder extends BaseBuilder {
     if (namespace != null) {
       Class<?> boundType = null;
       try {
+        // 将资源绑定到某一个接口，也就是通过动态代理为该接口生成实现类
         boundType = Resources.classForName(namespace);
       } catch (ClassNotFoundException e) {
         // ignore, bound type is not required

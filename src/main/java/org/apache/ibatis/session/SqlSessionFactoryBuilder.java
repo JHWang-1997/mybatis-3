@@ -82,6 +82,7 @@ public class SqlSessionFactoryBuilder {
     } catch (Exception e) {
       throw ExceptionFactory.wrapException("Error building SqlSession.", e);
     } finally {
+      // 清空错误上下文
       ErrorContext.instance().reset();
       try {
         if (inputStream != null) {

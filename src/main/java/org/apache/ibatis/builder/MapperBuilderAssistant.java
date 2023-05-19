@@ -100,6 +100,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
         throw new BuilderException("Dots are not allowed in element names, please remove it from " + base);
       }
     }
+    // 为当前base加上namespace的前缀
     return currentNamespace + "." + base;
   }
 
@@ -154,6 +155,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
   public ResultMap addResultMap(String id, Class<?> type, String extend, Discriminator discriminator,
       List<ResultMapping> resultMappings, Boolean autoMapping) {
     id = applyCurrentNamespace(id, false);
+    // 继承自当前mapper下的其他resultMap
     extend = applyCurrentNamespace(extend, true);
 
     if (extend != null) {

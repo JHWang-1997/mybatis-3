@@ -14,7 +14,9 @@
 
   <environments default="default">
     <environment id="default">
+      <!--JDBC是"class org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory"的内置别名-->
       <transactionManager type="JDBC"></transactionManager>
+      <!--POOLED是 "class org.apache.ibatis.datasource.pooled.PooledDataSourceFactory"的内置别名-->
       <dataSource type="POOLED">
         <property name="driver" value="${jdbc.driver}"/>
         <property name="url" value="${jdbc.url}"/>

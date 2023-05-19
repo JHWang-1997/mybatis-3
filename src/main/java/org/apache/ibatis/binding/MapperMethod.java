@@ -141,6 +141,7 @@ public class MapperMethod {
     List<E> result;
     Object param = method.convertArgsToSqlCommandParam(args);
     if (method.hasRowBounds()) {
+      // 分页查询
       RowBounds rowBounds = method.extractRowBounds(args);
       result = sqlSession.selectList(command.getName(), param, rowBounds);
     } else {
@@ -286,6 +287,7 @@ public class MapperMethod {
       if (resolvedReturnType instanceof Class<?>) {
         this.returnType = (Class<?>) resolvedReturnType;
       } else if (resolvedReturnType instanceof ParameterizedType) {
+        // 返回值是参数化反省，可以推断为多个查询
         this.returnType = (Class<?>) ((ParameterizedType) resolvedReturnType).getRawType();
       } else {
         this.returnType = method.getReturnType();
