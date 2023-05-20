@@ -1,5 +1,7 @@
 package com.wjh.pojo;
 
+import java.util.List;
+
 /**
  *@author JH-Wang
  *@since 2023/5/17 0:45
@@ -14,6 +16,10 @@ public class User {
 
   private Integer sex;
 
+  private List<Product> products;
+
+  private List<Order> orders;
+
   @Override
   public String toString() {
     return "User{" +
@@ -21,7 +27,25 @@ public class User {
       ", name='" + name + '\'' +
       ", age=" + age +
       ", sex=" + sex +
+      ", products=" + products +
+      ", orders=" + orders +
       '}';
+  }
+
+  public List<Order> getOrders() {
+    return orders;
+  }
+
+  public void setOrders(List<Order> orders) {
+    this.orders = orders;
+  }
+
+  public List<Product> getProducts() {
+    return products;
+  }
+
+  public void setProducts(List<Product> products) {
+    this.products = products;
   }
 
   public Integer getId() {

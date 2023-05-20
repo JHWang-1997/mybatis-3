@@ -364,6 +364,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     while (shouldProcessMoreRows(resultContext, rowBounds) && !resultSet.isClosed() && resultSet.next()) {
       ResultMap discriminatedResultMap = resolveDiscriminatedResultMap(resultSet, resultMap, null);
       Object rowValue = getRowValue(rsw, discriminatedResultMap, null);
+      // 在这个函数里面实现延迟加载对象的增强
       storeObject(resultHandler, resultContext, rowValue, parentMapping, resultSet);
     }
   }

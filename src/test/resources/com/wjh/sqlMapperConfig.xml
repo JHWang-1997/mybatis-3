@@ -7,6 +7,10 @@
   <properties resource="com/wjh/jdbc.properties">
   </properties>
 
+  <settings>
+    <setting name="lazyLoadingEnabled" value="true"/>
+  </settings>
+
 
   <typeAliases>
     <package name="com.wjh.pojo"/>
@@ -28,7 +32,7 @@
 
 
   <mappers>
-    <mapper resource="com/wjh/mapper/UserMapper.xml"></mapper>
+    <package name="com.wjh.mapper"/>
   </mappers>
 
 

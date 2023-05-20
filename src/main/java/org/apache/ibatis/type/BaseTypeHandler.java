@@ -78,7 +78,7 @@ public abstract class BaseTypeHandler<T> extends TypeReference<T> implements Typ
             + e, e);
       }
     }
-  }
+   }
 
   @Override
   public T getResult(ResultSet rs, String columnName) throws SQLException {

@@ -2,10 +2,56 @@
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.wjh.mapper.IUserDao">
+<mapper namespace="com.wjh.mapper.UserMapper">
 
+
+  <resultMap id="userMap" type="user">
+    <id property="id" column="id"/>
+    <result property="name" column="name"/>
+    <result property="sex" column="sex"/>
+    <result property="age" column="age"/>
+    <collection property="products" ofType="product">
+      <result property="id" column="pid"/>
+      <result property="name" column="pName"/>
+      <result property="price" column="price"/>
+    </collection>
+  </resultMap>
+
+  <resultMap id="userMap2" type="user">
+    <id property="id" column="id"/>
+    <result property="name" column="name"/>
+    <result property="sex" column="sex"/>
+    <result property="age" column="age"/>
+    <collection property="orders" ofType="order" column="id" select="com.wjh.mapper.OrderMapper.selectByUserId" fetchType="lazy">
+    </collection>
+  </resultMap>
+
+  <sql id="user">
+    select * from t_user
+  </sql>
 
   <select id="selectAll" resultType="user" >
-    select * from t_user
+    <include refid="user"/>
+  </select>
+
+  <select id="selectOne" parameterType="user" resultType="user">
+    <include refid="user"/>
+    <where>
+      <if test="id != null">
+        and id = #{id}
+      </if>
+      <if test="name != null">
+        and name = #{name}
+      </if>
+    </where>
+  </select>
+
+  <select id="selectWithProduct" resultMap="userMap">
+    select u.*,p.id pid, p.name pNAme, p.price  from t_user u left join  t_order o on u.id = o.uid left join t_product p on o.pid = p.id;
+  </select>
+
+  <select id="selectWithOrders" resultMap="userMap2" parameterType="int">
+    <include refid="user"></include>
+    where id = #{id}
   </select>
 </mapper>
