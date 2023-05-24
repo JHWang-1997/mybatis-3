@@ -54,4 +54,28 @@
     <include refid="user"></include>
     where id = #{id}
   </select>
+
+  <update id="updateById" parameterType="user">
+    update t_user
+    <set>
+      <if test="id != null">
+        id = #{id},
+      </if>
+      <if test="name != null">
+        name = #{name},
+      </if>
+      <if test="age != null">
+        age = #{age},
+      </if>
+      <if test="sex != null">
+        sex = #{sex},
+      </if>
+    </set>
+    <where>
+      id = #{id}
+    </where>
+  </update>
+
+
+  <insert id="as" useGeneratedKeys=""
 </mapper>

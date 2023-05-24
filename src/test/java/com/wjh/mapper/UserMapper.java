@@ -18,4 +18,6 @@ public interface UserMapper {
 
   User selectWithOrders(int userId);
 
+  int updateById(User user);
+
 }

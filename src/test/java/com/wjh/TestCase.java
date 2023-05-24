@@ -6,6 +6,7 @@ import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -58,6 +59,16 @@ public class TestCase {
     final User user = userDao.selectWithOrders(1);
     System.out.println(user.getName());
     System.out.println(user.getOrders());
+  }
+
+  @Test
+  public void testUpdate() {
+    final UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+    final User user = new User();
+    user.setId(1);
+    user.setAge(18);
+    final int i = userMapper.updateById(user);
+    Assert.assertEquals(1, i);
   }
 
 }
