@@ -76,6 +76,4 @@
     </where>
   </update>
 
-
-  <insert id="as" useGeneratedKeys=""
 </mapper>
